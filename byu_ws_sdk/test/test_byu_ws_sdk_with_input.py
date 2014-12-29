@@ -1,6 +1,7 @@
 import unittest
 import byu_ws_sdk as oit
 import getpass
+import os
 
 
 def get_input(prompt):
@@ -20,8 +21,12 @@ class TestOITWebServicesLibraryInput(unittest.TestCase):
         self.assertTrue('personId' in res)
 
     def test_authorize_request(self):
-        apiKey = get_input("API Key: ")
-        sharedSecret = getpass.getpass("Shared secret: ")
+        apiKey = os.getenv('BYU_API_KEY')
+        sharedSecret = os.getenv('BYU_API_SECRET')
+        if not apiKey:
+            apiKey = get_input("API Key: ")
+        if not sharedSecret:
+            sharedSecret = getpass.getpass("Shared secret: ")
         headerValue = oit.get_http_authorization_header(apiKey,
                                                         sharedSecret,
                                                         oit.KEY_TYPE_API,

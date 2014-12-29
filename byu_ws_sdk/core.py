@@ -4,7 +4,12 @@ The code that generates the Authorization HTTP header.
 __author__ = 'paul_eden@byu.edu'
 import os
 import xml.dom.minidom
-import simplejson
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
+
 import hashlib
 import hmac
 import base64
@@ -85,7 +90,7 @@ def get_ws_session(casNetId, casPassword, casTimeout=1, **kwargs):
     if not body:
         raise Exception("The WsSession-granting web service did not provide a WsSession."
                         "  Perhaps the username and password supplied are not valid?")
-    return simplejson.loads(body)
+    return json.loads(body)
 
 
 def get_nonce(apiKey, actor="", **kwargs):
@@ -106,7 +111,7 @@ def get_nonce(apiKey, actor="", **kwargs):
     response = requests.post(nonce_url.format(apiKey, actor), **kwargs)
     body = response.content
     try:
-        rvalue = simplejson.loads(body)
+        rvalue = json.loads(body)
     except:
         print(body)
         raise

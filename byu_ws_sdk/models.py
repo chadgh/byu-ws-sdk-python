@@ -62,7 +62,7 @@ class Person(object):
         return str(self.__unicode__())
 
     def __unicode__(self):
-        return unicode(self.net_id)
+        return self.net_id
 
 
 class Course(object):

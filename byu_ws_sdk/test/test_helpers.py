@@ -27,7 +27,7 @@ class TestPersonFactory(unittest.TestCase):
 
     def test_get_memberships(self):
         person = self.pf.get_memberships(self.p, ['Employee', 'Student'])
-        person = self.pf.get_memberships(self.p, ['HSE'], 'ryanamy')
+        person = self.pf.get_memberships(self.p, ['test_gro_group'], 'jcougar2')
         self.assertEquals(person.is_member('Employee'), False)
         self.assertEquals(person.is_member('Student'), False)
-        self.assertEquals(person.is_member('HSE'), True)
+        self.assertEquals(person.is_member('test_gro_group'), True)

@@ -28,6 +28,7 @@ _get_header = partial(get_http_authorization_header,
 
 
 def _threadable(func):
+    """Decorator that allows for a function to be called in a thread."""
     def wrapped_func(q, *args, **kwargs):
         rtn = func(*args, **kwargs)
         q.put(rtn)
@@ -47,6 +48,7 @@ def _threadable(func):
 
 @_threadable
 def _get_response(service, service_caller, information):
+    """Threaded function. Calls a web service and returns the response."""
     response = {}
     if service['name'] == 'ismember':
         response = service_caller(service, group_id=information)
@@ -69,6 +71,7 @@ def _remove_index(dictionary, index):
 
 
 def _service_caller(service, net_id, actor, byu_key, byu_secret, **kwargs):
+    """Calls a web service in a standard way."""
     if service['name'] == 'ismember':
         group_id = kwargs['group_id']
         del kwargs['group_id']
@@ -101,8 +104,33 @@ def _service_caller(service, net_id, actor, byu_key, byu_secret, **kwargs):
 
 
 class PersonFactory(object):
+    """
+    Helper for calling web services in parallel and populating Person
+    information.
+    """
     def __init__(self, actor=None, byu_key=None, byu_secret=None,
                  **extra_request_kwargs):
+        """
+        Prepares the PersonFactory to call web services with specific
+        authorization information.
+
+        Arguments:
+            actor - string of the actor netId to use for all requests coming
+                    from this instance. (default None)
+            byu_key - string of the BYU API Key to be used for all web service
+                      requests. (default None, checks BYU_WS_KEY environment
+                      variable)
+            byu_secret - string of the BYU API shared secret to be used for all
+                         web service requests. (default None, checks
+                         BYU_WS_SECRET environment variable)
+            extra_request_kwargs - kwargs sent directly to the underlying
+                                   requests method calls. A `timeout` parameter
+                                   is added if none is explicily given, for
+                                   3 seconds.
+        Raises:
+            BYUServiceError - If the byu_key or byu_secret could not be
+                              determined.
+        """
         self.byu_key = byu_key
         if byu_key is None:
             self.byu_key = os.environ.get('BYU_WS_KEY')
@@ -138,6 +166,43 @@ class PersonFactory(object):
                        **self.extra_request_kwargs)
 
     def get_person(self, net_id, information=None):
+        """
+        Returns a Person model instance populated with the specified
+        information.
+
+        Arguments:
+            net_id - string of the person's netId that you want information
+                     about.
+            information - list of strings of information names. Valid names can
+                          be found below. (default None, which is interpreted
+                          as a blank list and results in a Person model being
+                          returned with only the net_id field populated)
+
+        Valid information list strings:
+            first_name
+            full_name
+            given_names
+            name
+            sort_name
+            surname
+            surname_position
+            byu_id
+            byu_id_issue_number
+            byu_id_number
+            courses  # not yet implemented
+            department
+            email
+            employee_role
+            gender
+            hired_date
+            job_title
+            person_id
+            retirement_date
+            student_role
+
+        Raises:
+            BYUServiceError - if any of the services called result in an error.
+        """
         information = information if information else []
 
         actor = self.actor if self.actor else net_id
@@ -170,11 +235,14 @@ class PersonFactory(object):
         Person instance populated with additional group membership information.
 
         Arguments:
-            person - a object instance that has a add_membership method taking
-                     the group_id and a boolean indicating membership.
+            person - instance of a Person model with at least a net_id.
             groups - a list of group_ids to check membership on.
             actor - the actor to use to check group memberships
                     (default person.actor)
+
+        Raises:
+            BYUServiceError - if any of the calls to the ismember service
+                              resulted in an error.
         """
         actor = actor if actor else person.actor
         call_service = self._get_service_caller(person.net_id, actor)

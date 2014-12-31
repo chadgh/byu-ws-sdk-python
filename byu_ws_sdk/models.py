@@ -40,6 +40,7 @@ class Person(object):
         self.person_id = None
         self.retirement_date = None
         self.student_role = None
+        # is member information
         self.memberships = {}
 
     def get_raw_service_response(self, service_name):
@@ -53,9 +54,24 @@ class Person(object):
         self._raw_service_responses[service_name] = response
 
     def is_member(self, group_id):
+        """
+        Returns bool indicating if the person has membership in a group.
+
+        Arguments:
+            group_id - string of the group name.
+
+        Returns False by default if the group_id isn't found.
+        """
         return self.memberships.get(group_id, False)
 
     def add_membership(self, group_id, is_member=True):
+        """
+        Sets membership in a group.
+
+        Arguments:
+            group_id - string of the group name.
+            is_member - bool indicating membership in the group (default True).
+        """
         self.memberships[group_id] = is_member
 
     def __str__(self):

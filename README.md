@@ -103,7 +103,7 @@ Here is an ipython session showing the API.  I wrapped some of the output for re
 This package also provides some models to represent people at BYU. The `Person` model can be instantiated manually and used manually. By taking advantage of the `PersonFactory`, you can get an instantiated `Person` model that has information already filled out populated from various BYU web services. For example:
 
     1 >>> from byu_ws_sdk.helpers import PersonFactory
-    2 >>> pf = PersonFactory()
+    2 >>> pf = PersonFactory()  # assuming you have BYU_WS_KEY and BYU_WS_SECRET environment variables defined. Otherwise they should be passed in.
     3 >>> person = pf.get_person('jcougar2', ['full_name', 'byu_id', 'email'])
     4 >>> person.full_name
     4: u'Joseph Q. Cougar'

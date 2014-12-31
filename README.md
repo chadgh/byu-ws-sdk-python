@@ -98,3 +98,33 @@ Here is an ipython session showing the API.  I wrapped some of the output for re
         {'nonceKey': '57921',
          'nonceValue': 'G4qPJr5L3xI3KjXPw0g1mgWY8bzInQts7uctUfTAINm5ov3WCbXqRrTlFyECiiY/8rKGIqGUNDMxI9HlFvDEKg=='}
 
+
+## BYU Models
+This package also provides some models to represent people at BYU. The `Person` model can be instantiated manually and used manually. By taking advantage of the `PersonFactory`, you can get an instantiated `Person` model that has information already filled out populated from various BYU web services. For example:
+
+    1 >>> from byu_ws_sdk.helpers import PersonFactory
+    2 >>> pf = PersonFactory()
+    3 >>> person = pf.get_person('jcougar2', ['full_name', 'byu_id', 'email'])
+    4 >>> person.full_name
+    4: u'Joseph Q. Cougar'
+
+    5 >>> person.byu_id
+    5: u'64-586-3824'
+
+    6 >>> person.email
+    6: u'joe@primo.exlibris.com'
+
+    7 >>> person.net_id
+    7: 'jcougar2'
+
+    8 >>> pf.get_memberships(person, ['Employee', 'Student', 'test_gro_group'])
+    8: <byu_ws_sdk.models.Person at 0x7f70aa778d90>
+
+    9 >>> person.memberships
+    9: {'Employee': False, 'Student': False, 'test_gro_group': True}
+
+    10 >>> person.is_member('Employee')
+    10: False
+
+    11 >>> person.is_member('test_gro_group')
+    11: True
